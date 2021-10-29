@@ -6,12 +6,10 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PointF;
 import android.graphics.Rect;
-import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.view.View;
 
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 
 /**
  * Created by liuml on 2021/10/27 13:38
@@ -50,7 +48,8 @@ public class MyClockView extends View {
     private PointF center = new PointF();
 
 
-    private String[] clockNumbers24 = {"24","13","14","15","16","17","18","19","20","21","22","23",};
+    private String[] clockNumbers24 = {"24", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23",};
+
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
 //        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
@@ -102,10 +101,7 @@ public class MyClockView extends View {
         if (mHeight == 0) {
             mWidth = right - left;
             mHeight = bottom - top;
-//            padding = 130;
-//            padding = Math.min(mWidth, mHeight) / 5;
             padding = Math.min(mWidth, mHeight) / 10;
-//            radius = Math.min(mWidth, mHeight) / 2 - padding;
         }
 
         center.x = (left + right) / 2;
@@ -135,8 +131,7 @@ public class MyClockView extends View {
         linePaint = new Paint();
         linePaint.setAntiAlias(true);//设置Paint为无锯齿
         linePaint.setColor(getContext().getResources().getColor(R.color.gary));//设置灰色
-//        textPaint.setColor(708090);
-
+//        textPaint.setColor(708090)
 
 //        StokPaint = new Paint();
 //        StokPaint.setAntiAlias(true);
@@ -158,40 +153,51 @@ public class MyClockView extends View {
         canvas.save();
 
         //画刻度和文字
-        drawOutText(canvas);
+        drawClockText(canvas);
+        //画刻度
+        drawLine(canvas);
         //画最外面的圆
         drawOutCircle(canvas);
 
         canvas.restore();//把当前画布返回（调整）到上一个save()状态之前
     }
 
-    //画外面的时间文字 与刻度
-    private void drawOutText(Canvas canvas) {
+    //画刻度
+    private void drawLine(Canvas canvas) {
+        //刻度长度为20
+        canvas.drawLine(center.x, center.y - radius, center.x, center.y - radius - 20, linePaint);
+    }
+
+    //画外面的时间文字
+    private void drawClockText(Canvas canvas) {
 
 //            通过旋转画布的方式快速设置刻度
 //        canvas.rotate(6);
 
         //x，y才是文本真正的准确坐标，需要减去文本的自身宽、高因素
-        int x,y;
+        int x, y;
 //        textPaint.setColor(getContext().getResources().getColor(R.color.gary));
-        for (int i = 0; i <= clockNumbers24.length-1; i++) {
+        for (int i = 0; i <= clockNumbers24.length - 1; i++) {
 
             //画刻度 与文字
-            drawText(canvas, clockNumbers24[i]);
+//            drawText(canvas, clockNumbers24[i]);
 
             textPaint.setStrokeWidth(20);
-            canvas.drawLine(center.x, center.y - radius, center.x, center.y - radius - 20, linePaint);
-//            canvas.drawText(i + "", center.x , center.y - radius - 35, textPaint);
-//            canvas.drawLine(0,-mClockRadius+mClockRingWidth/2,
-//                    0,-mClockRadius+mSpecialLength,mCirclePaint);
+            drawLine(canvas);
 
-            //计算画布每次需要旋转的角度
-            canvas.rotate(360/clockNumbers24.length, getWidth() / 2, getHeight() / 2);//以圆中心进行旋转
+            Rect rect = new Rect();
+            textPaint.getTextBounds(clockNumbers24[i], 0, clockNumbers24[i].length(), rect);
+            int height = rect.height();
+            int width = rect.width();
+            canvas.drawText(clockNumbers24[i], center.x - width / 2, center.y - radius - 35, textPaint);
+
+//            计算画布每次需要旋转的角度
+            canvas.rotate(360 / clockNumbers24.length, getWidth() / 2, getHeight() / 2);//以圆中心进行旋转
         }
 
 
         //绘制完后，把画布状态复原
-        canvas.restore();
+//        canvas.restore();
     }
 
     private void drawText(Canvas canvas, String string) {
@@ -199,14 +205,13 @@ public class MyClockView extends View {
 //        x = (int) (preX - mPaint.measureText(string) / 2);
 //        y = preY - textBounds.height();//从文本的中心点处开始绘制
 
-        canvas.drawText(string, center.x , center.y - radius - 35, textPaint);
+        canvas.drawText(string, center.x, center.y - radius - 35, textPaint);
 
     }
 
     private void drawOutCircle(Canvas canvas) {
 
 //        canvas.translate(center.x, center.y);
-
         mOutCirclePaint.setColor(Color.BLUE);
         //绘制
         /**
@@ -218,7 +223,6 @@ public class MyClockView extends View {
 //        mOutCirclePaint.setStrokeWidth(60f);//设置线宽
 
         canvas.drawCircle(center.x, center.y, radius, mOutCirclePaint);//画大圆
-//        canvas.drawCircle(0,0,);
 
 
     }
