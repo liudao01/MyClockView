@@ -3,7 +3,7 @@ package com.example.myclockview;
 /**
  * Created by liuml on 2021/10/28 10:40
  */
-public class CircleData {
+public class OutCircleData {
 
     private int startAngle;
     private int endAngle;
