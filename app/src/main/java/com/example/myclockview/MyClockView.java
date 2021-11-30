@@ -8,6 +8,7 @@ import android.graphics.PointF;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 
 import java.text.SimpleDateFormat;
@@ -18,6 +19,13 @@ import java.util.ArrayList;
  */
 public class MyClockView extends View {
 
+
+    //绘制扇形教程
+    //https://www.jianshu.com/p/70c48029e301
+
+    private String TAG = "MyClockView";
+
+    private RectF acrRectF;
 
     public MyClockView(Context context) {
         this(context, null);
@@ -36,7 +44,7 @@ public class MyClockView extends View {
     private Paint mOutCirclePaint = null;//外层圆画笔
     private Paint textPaint = null;//文字画笔
     private Paint linePaint = null;//刻度画笔
-
+    private Paint testPaint = null;//测试画笔
 
     private float circleWidth = 60f;//外圈圆宽度
     private int lineTextSize = 30;//刻度线大小
@@ -45,9 +53,10 @@ public class MyClockView extends View {
 
     private int drawTextBegin = 0;
 
-
     private RectF rectF;
 
+    private int screenWidth;
+    private int screenHeight;
 
     /**
      * 用于测量文本的宽、高度（这里主要是来获取高度）
@@ -73,13 +82,12 @@ public class MyClockView extends View {
 
         if (getMeasuredWidth() != 0 && getMeasuredHeight() != 0) {
             rectF = new RectF(0, 0, radius * 2, radius * 2);
-//			this.start();
         }
 
     }
 
     /**
-     * 获取View尺寸
+     * 获取View尺寸 测量控件大小
      *
      * @param isWidth 是否是width，不是的话，是height
      */
@@ -124,10 +132,11 @@ public class MyClockView extends View {
             padding = Math.min(mWidth, mHeight) / 10;
         }
 
-        center.x = (left + right) / 2;
-        center.y = (bottom - top) / 2;
+        center.x = screenWidth / 2;
+        center.y = screenHeight/2;
 
-        drawTextBegin = (int) (center.y + circleWidth);
+        //设置将要用来画扇形的矩形的轮廓
+//        drawTextBegin = (int) (center.y + circleWidth);
 
     }
 
@@ -144,6 +153,7 @@ public class MyClockView extends View {
         mOutCirclePaint.setAntiAlias(true);//设置Paint为无锯齿
         mOutCirclePaint.setStyle(Paint.Style.STROKE);
         mOutCirclePaint.setStrokeWidth(circleWidth);//设置线宽
+        mOutCirclePaint.setColor(Color.BLUE);
 
         //刻度文字画笔
         textPaint = new Paint();
@@ -152,7 +162,7 @@ public class MyClockView extends View {
         textPaint.setColor(getContext().getResources().getColor(R.color.gary));
         textPaint.setStrokeWidth(textPainSize);
 
-        // 刻度画笔
+        //刻度画笔
         linePaint = new Paint();
         linePaint.setAntiAlias(true);//设置Paint为无锯齿
         linePaint.setColor(getContext().getResources().getColor(R.color.gary));//设置灰色
@@ -160,20 +170,33 @@ public class MyClockView extends View {
 
 //        StokPaint = new Paint();
 //        StokPaint.setAntiAlias(true);
+
+        testPaint = new Paint();
+        testPaint.setTextSize(lineTextSize);
+        testPaint.setAntiAlias(true);//设置Paint为无锯齿
+        testPaint.setColor(getContext().getResources().getColor(R.color.design_default_color_error));
+//        testPaint.setStrokeWidth(10);
+
+        //初始化区域
+        rectF = new RectF();
+        acrRectF = new RectF();
     }
 
     private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
 
-    //onSizeChanged() 在控件大小发生改变时调用。初始化会被调用一次
+    //确定View大小
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
+        this.screenWidth = w;     //获取宽高
+        this.screenHeight = h;
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
+//        canvas.translate(screenWidth / 2, screenHeight / 2);
         //先设置画布为view的中心点  把当前画布的原点移到(center.x,center.y),后面的操作都以(10,10)作为参照点，默认原点为(0,0)
         canvas.save();
 
@@ -182,8 +205,14 @@ public class MyClockView extends View {
         drawClockText(canvas);
         //画刻度
         drawLine(canvas);
-        //画最外面的圆
-        drawOutCircle(canvas);
+        //画最外面的扇形
+//        drawOutCircle(canvas);
+        //画扇形
+        drawMyAcr(canvas);
+
+//        canvas.translate(w / 2, h / 2);
+//        acrRectF = new RectF(left, top, right, bottom);
+//        float r = (float) (Math.min(w, h) / 2);     //饼状图半径(取宽高里最小的值)
 
         canvas.restore();//把当前画布返回（调整）到上一个save()状态之前
     }
@@ -197,7 +226,8 @@ public class MyClockView extends View {
 
     //画外面的时间文字
     private void drawClockText(Canvas canvas) {
-
+        canvas.drawText("0000", mWidth - radius,
+                mHeight - radius , textPaint);
         for (int i = 0; i <= clockNumbers24.length - 1; i++) {
 
             drawLine(canvas);
@@ -208,13 +238,10 @@ public class MyClockView extends View {
             int width = rect.width();
             canvas.drawText(clockNumbers24[i], center.x - width / 2,
                     center.y - radius - circleWidth - textLineSpace, textPaint);
-
 //            通过旋转画布的方式快速设置刻度
 //            计算画布每次需要旋转的角度
-            canvas.rotate(360 / clockNumbers24.length, getWidth() / 2, getHeight() / 2);//以圆中心进行旋转
+            canvas.rotate(360 / clockNumbers24.length, mWidth / 2, mHeight / 2);//以圆中心进行旋转
         }
-
-
         //绘制完后，把画布状态复原
 //        canvas.restore();
     }
@@ -237,20 +264,27 @@ public class MyClockView extends View {
 //                        outCircleData.getStartAngle(), outCircleData.getEndAngle());
             }
         }
-
-//        canvas.translate(center.x, center.y);
-//        mOutCirclePaint.setColor(Color.BLUE);
-//        //绘制
-//        /**
-//         * Paint.Style.FILL设置只绘制图形内容
-//         * Paint.Style.STROKE设置只绘制图形的边
-//         * Paint.Style.FILL_AND_STROKE设置都绘制
-//         */
-////        mOutCirclePaint.setStyle(Paint.Style.STROKE);
-////        mOutCirclePaint.setStrokeWidth(60f);//设置线宽
 //
-        canvas.drawCircle(center.x, center.y, radius, mOutCirclePaint);//画大圆
+//        canvas.drawCircle(center.x, center.y, radius, mOutCirclePaint);//画大圆
+    }
 
+
+    //画扇形
+    private void drawMyAcr(Canvas canvas) {
+        // 矩形区域
+//        Rect rect = RectF(centerX - radius, centerY - radius, centerX + radius, centerY + radius)
+
+        acrRectF.set(center.x-radius,center.y -radius, center.x+radius, center.y+radius);
+
+//        for (i in 0..mColors.size) {
+//            mPaint.color = mColors[i]
+//            canvas?.drawArc(rect, startAngele, sweepAngle, true, mPaint)
+//            startAngle += sweepAngle
+//        }
+        Log.d(TAG, "drawMyAcr: radius = " + radius);
+        mOutCirclePaint.setColor(getContext().getResources().getColor(R.color.gary));
+//        canvas.drawRect(acrRectF,testPaint);
+        canvas.drawArc(acrRectF, 0, 90, false, mOutCirclePaint);
     }
 
     /**
