@@ -226,8 +226,6 @@ public class MyClockView extends View {
 
     //画外面的时间文字
     private void drawClockText(Canvas canvas) {
-        canvas.drawText("0000", mWidth - radius,
-                mHeight - radius , textPaint);
         for (int i = 0; i <= clockNumbers24.length - 1; i++) {
 
             drawLine(canvas);
@@ -264,26 +262,15 @@ public class MyClockView extends View {
 //                        outCircleData.getStartAngle(), outCircleData.getEndAngle());
             }
         }
-//
 //        canvas.drawCircle(center.x, center.y, radius, mOutCirclePaint);//画大圆
     }
-
 
     //画扇形
     private void drawMyAcr(Canvas canvas) {
         // 矩形区域
-//        Rect rect = RectF(centerX - radius, centerY - radius, centerX + radius, centerY + radius)
-
         acrRectF.set(center.x-radius,center.y -radius, center.x+radius, center.y+radius);
-
-//        for (i in 0..mColors.size) {
-//            mPaint.color = mColors[i]
-//            canvas?.drawArc(rect, startAngele, sweepAngle, true, mPaint)
-//            startAngle += sweepAngle
-//        }
         Log.d(TAG, "drawMyAcr: radius = " + radius);
         mOutCirclePaint.setColor(getContext().getResources().getColor(R.color.gary));
-//        canvas.drawRect(acrRectF,testPaint);
         canvas.drawArc(acrRectF, 0, 90, false, mOutCirclePaint);
     }
 
