@@ -13,6 +13,7 @@ import android.view.View;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by liuml on 2021/10/27 13:38
@@ -37,6 +38,8 @@ public class MyClockView extends View {
 
     public MyClockView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+
+        initData();
     }
 
     private int radius = 350;//半径 后面动态
@@ -58,6 +61,26 @@ public class MyClockView extends View {
     private int screenWidth;
     private int screenHeight;
 
+
+    //模拟数据------------
+    // 定义几个颜色
+    private int[] colors = {
+            R.color.color_fff9331f,
+            R.color.theme_title_color,
+            R.color.teal_200,
+            R.color.color_4d1a1a1a,
+            R.color.color_EBB57A
+           };
+
+
+    private int currentColor = R.color.color_1A1A1A;
+    // 开始角度
+    private float startAngel = 0f;
+    // 扫过角度
+    private float sweepAngle = 360 / 5f;
+
+    private List<OutCircleData> outCircleDataList;
+    //模拟数据------------
     /**
      * 用于测量文本的宽、高度（这里主要是来获取高度）
      */
@@ -133,7 +156,7 @@ public class MyClockView extends View {
         }
 
         center.x = screenWidth / 2;
-        center.y = screenHeight/2;
+        center.y = screenHeight / 2;
 
         //设置将要用来画扇形的矩形的轮廓
 //        drawTextBegin = (int) (center.y + circleWidth);
@@ -268,10 +291,37 @@ public class MyClockView extends View {
     //画扇形
     private void drawMyAcr(Canvas canvas) {
         // 矩形区域
-        acrRectF.set(center.x-radius,center.y -radius, center.x+radius, center.y+radius);
+        acrRectF.set(center.x - radius, center.y - radius, center.x + radius, center.y + radius);
         Log.d(TAG, "drawMyAcr: radius = " + radius);
-        mOutCirclePaint.setColor(getContext().getResources().getColor(R.color.gary));
-        canvas.drawArc(acrRectF, 0, 90, false, mOutCirclePaint);
+        for (int i = 0; i < 3; i++) {
+
+            OutCircleData outCircleData = outCircleDataList.get(i);
+            mOutCirclePaint.setColor(getContext().getResources().getColor(outCircleData.getColor()));
+            Log.d(TAG, "drawMyAcr: 圆圈画笔颜色 = " + outCircleData.getColor());
+            Log.d(TAG, "drawMyAcr: outCircleData = " + outCircleData.toString());
+            canvas.drawArc(acrRectF, outCircleData.getStartAngle(), outCircleData.getEndAngle(), false, mOutCirclePaint);
+        }
+    }
+
+    public void setData() {
+
+
+    }
+
+    public void initData() {
+        outCircleDataList = new ArrayList<>();
+        //模拟数据
+        for (int i = 0; i < colors.length; i++) {
+            OutCircleData outCircleData = new OutCircleData();
+            outCircleData.setColor(colors[i]);
+            outCircleData.setName("第" + i + "个");
+            Log.d(TAG, "initData: colors[i] = " + colors[i]);
+            outCircleData.setStartAngle(startAngel);
+            outCircleData.setEndAngle(startAngel + sweepAngle);
+            startAngel = startAngel + sweepAngle;
+            Log.d(TAG, "initData: outCircleData  = " + outCircleData.toString());
+            outCircleDataList.add(outCircleData);
+        }
     }
 
     /**

@@ -5,22 +5,32 @@ package com.example.myclockview;
  */
 public class OutCircleData {
 
-    private int startAngle;
-    private int endAngle;
+    private float startAngle;
+    private float endAngle;
     private int color;
     private String name;
 
 
-    public int getStartAngle() {
-        return startAngle;
-    }
 
     public void setStartAngle(int startAngle) {
         this.startAngle = startAngle;
     }
 
-    public int getEndAngle() {
+
+    public float getEndAngle() {
         return endAngle;
+    }
+
+    public void setEndAngle(float endAngle) {
+        this.endAngle = endAngle;
+    }
+
+    public float getStartAngle() {
+        return startAngle;
+    }
+
+    public void setStartAngle(float startAngle) {
+        this.startAngle = startAngle;
     }
 
     public void setEndAngle(int endAngle) {
@@ -41,5 +51,15 @@ public class OutCircleData {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    @Override
+    public String toString() {
+        return "OutCircleData{" +
+                "startAngle=" + startAngle +
+                ", endAngle=" + endAngle +
+                ", color=" + color +
+                ", name='" + name + '\'' +
+                '}';
     }
 }

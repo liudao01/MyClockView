@@ -8,6 +8,58 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="gary">#999999</color>
+    <color name="colorPrimary">#6200EE</color>
+    <color name="front_black_1">#393A3B</color>
+    <color name="colorGray">#A8A8A8</color>
+
+    <color name="transparent">#00000000</color>
+    <color name="theme_title_color">#ff0063f5</color>
+    <color name="color_1A1A1A">#1A1A1A</color>
+    <color name="color_fff9331f">#fff9331f</color>
+    <color name="color_ff666666">#ff666666</color>
+    <color name="color_661A1A1A">#661a1a1a</color>
+    <color name="color_b31A1A1A">#b31A1A1A</color>
+    <color name="color_991a1a1a">#991a1a1a</color>
+    <color name="color_F6F6F6">#F6F6F6</color>
+    <color name="color_F5F5F5">#F5F5F5</color>
+    <color name="color_E7B56A">#E7B56A</color>
+    <color name="blue">#4c90f9</color>
+    <color name="main_orange">#F9CC90</color>
+    <color name="color_EBB57A">#EBB57A</color>
+    <color name="color_4d1a1a1a">#4d1a1a1a</color>
+    <color name="color_1a000000">#1a000000</color>
+    <color name="color_661a1a1a">#661a1a1a</color>
+    <color name="color_F9CC90">#F9CC90</color>
+    <color name="color_0CAEF6">#0CAEF6</color>
+    <color name="color_ff1a1a1a">#ff1a1a1a</color>
+    <color name="color_E2CDA4">#E2CDA4</color>
+    <color name="transparence">@android:color/transparent</color>
+    <color name="color_EFF2F3">#EFF2F3</color>
+    <color name="them_color_bg">#F7F6F5</color>
+    <color name="colorBlack">#000000</color>
+    <color name="color_fff6f6f6">#fff6f6f6</color>
+    <color name="color_0063F5">#0063F5</color>
+
+    <color name="load_success">#03a44e</color>
+    <color name="load_failure">#de0e26</color>
+    <color name="ticket_color">#ffff3b3b</color>
+    <color name="ticket_color_none">#661a1a1a</color>
+
+    <color name="color_F9331F">#F9331F</color>
+
+    <!--白色透明度-->
+    <color name="translucent_white_50">#80ffffff</color>
+
+    <!--黑色透明度-->
+    <color name="translucent_black_65">#59000000</color>
 
 
+    <color name="translucent_black_ff">#FF000000</color>
+    <!--    黑色不透明透明：//FF表示不透明，000000表示黑色-->
+
+    <color name="translucent_black_B3">#B3000000</color>
+    <!--    黑色70%透明度： //4D表示透明度为70%，000000表示黑色-->
+
+    <color name="translucent_black_80">#80000000</color>
+    <!--    黑色半透明： //80表示透明度为50%，000000表示黑色-->
 </resources>
