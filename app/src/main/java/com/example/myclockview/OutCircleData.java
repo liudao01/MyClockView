@@ -7,10 +7,18 @@ public class OutCircleData {
 
     private float startAngle;
     private float endAngle;
+    private float sweepAngle;//扫过的角度
     private int color;
     private String name;
 
 
+    public float getSweepAngle() {
+        return sweepAngle;
+    }
+
+    public void setSweepAngle(float sweepAngle) {
+        this.sweepAngle = sweepAngle;
+    }
 
     public void setStartAngle(int startAngle) {
         this.startAngle = startAngle;

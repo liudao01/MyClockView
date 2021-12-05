@@ -293,13 +293,14 @@ public class MyClockView extends View {
         // 矩形区域
         acrRectF.set(center.x - radius, center.y - radius, center.x + radius, center.y + radius);
         Log.d(TAG, "drawMyAcr: radius = " + radius);
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < outCircleDataList.size(); i++) {
 
             OutCircleData outCircleData = outCircleDataList.get(i);
             mOutCirclePaint.setColor(getContext().getResources().getColor(outCircleData.getColor()));
             Log.d(TAG, "drawMyAcr: 圆圈画笔颜色 = " + outCircleData.getColor());
             Log.d(TAG, "drawMyAcr: outCircleData = " + outCircleData.toString());
-            canvas.drawArc(acrRectF, outCircleData.getStartAngle(), outCircleData.getEndAngle(), false, mOutCirclePaint);
+        //第三个参数是扫过的角度
+            canvas.drawArc(acrRectF, outCircleData.getStartAngle(), outCircleData.getSweepAngle(), false, mOutCirclePaint);
         }
     }
 
@@ -318,6 +319,7 @@ public class MyClockView extends View {
             Log.d(TAG, "initData: colors[i] = " + colors[i]);
             outCircleData.setStartAngle(startAngel);
             outCircleData.setEndAngle(startAngel + sweepAngle);
+            outCircleData.setSweepAngle( sweepAngle);
             startAngel = startAngel + sweepAngle;
             Log.d(TAG, "initData: outCircleData  = " + outCircleData.toString());
             outCircleDataList.add(outCircleData);
