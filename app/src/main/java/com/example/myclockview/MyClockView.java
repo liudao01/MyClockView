@@ -97,7 +97,7 @@ public class MyClockView extends View {
 
 
     private String[] clockNumbers24 = {"24", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23",};
-    private String[] clockNumbers12 = {"24", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23",};
+    private String[] clockNumbers12 = {"12", "1", "2", "15", "16", "17", "18", "19", "20", "21", "22", "23",};
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
@@ -273,11 +273,11 @@ public class MyClockView extends View {
     //画内部刻度
     private void drawInnerLine(Canvas canvas) {
         //刻度长度为20  circleWidth
-        canvas.drawLine(center.x, center.y - radius + circleWidth, center.x,
-                center.y - radius - circleWidth, linePaint);
+        canvas.drawLine(center.x, center.y - radius + circleWidth+circleWidth/2, center.x,
+                center.y - radius + circleWidth*2, linePaint);
     }
 
-    //画外面的时间文字
+    //画内部的时间文字
     private void drawInnerClockText(Canvas canvas) {
         for (int i = 0; i <= clockNumbers12.length - 1; i++) {
 
@@ -287,14 +287,14 @@ public class MyClockView extends View {
             textPaint.getTextBounds(clockNumbers24[i], 0, clockNumbers24[i].length(), rect);
             int height = rect.height();
             int width = rect.width();
-            canvas.drawText(clockNumbers24[i], center.x - width / 2,
+            canvas.drawText(clockNumbers12[i], center.x - width / 2,
                     center.y - radius - circleWidth - textLineSpace, textPaint);
 //            通过旋转画布的方式快速设置刻度
 //            计算画布每次需要旋转的角度
             canvas.rotate(360 / clockNumbers24.length, mWidth / 2, mHeight / 2);//以圆中心进行旋转
         }
         //绘制完后，把画布状态复原
-//        canvas.restore();
+        //canvas.restore();
     }
 
     //画外面的时间文字
