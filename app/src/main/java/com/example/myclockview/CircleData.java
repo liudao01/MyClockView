@@ -3,14 +3,22 @@ package com.example.myclockview;
 /**
  * Created by liuml on 2021/10/28 10:40
  */
-public class OutCircleData {
+public class CircleData {
 
     private float startAngle;
     private float endAngle;
     private float sweepAngle;//扫过的角度
     private int color;
     private String name;
+    private int type;//1 外圈 0 内圈
 
+    public int getType() {
+        return type;
+    }
+
+    public void setType(int type) {
+        this.type = type;
+    }
 
     public float getSweepAngle() {
         return sweepAngle;
@@ -66,8 +74,10 @@ public class OutCircleData {
         return "OutCircleData{" +
                 "startAngle=" + startAngle +
                 ", endAngle=" + endAngle +
+                ", sweepAngle=" + sweepAngle +
                 ", color=" + color +
                 ", name='" + name + '\'' +
+                ", type=" + type +
                 '}';
     }
 }

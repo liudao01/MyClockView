@@ -43,18 +43,25 @@ public class MyClockView extends View {
     }
 
     private int radius = 350;//半径 后面动态
+    private int centerRadius = 180;//半径 后面动态
 
     private Paint mOutCirclePaint = null;//外层圆画笔
     private Paint mInnerCirclePaint = null;//内层圆画笔
+    private Paint mCenterCirclePaint = null;//中心圆画笔
+
     private Paint textPaint = null;//文字画笔
     private Paint linePaint = null;//刻度画笔
     private Paint testPaint = null;//测试画笔
+
+    private Paint centerTextPaint = null;//测试画笔
 
     private float circleWidth = 60f;//外圈圆宽度
     private int lineTextSize = 30;//刻度线文字大小
     private int lineLength = 20;//刻度线长度
     private int textPainSize = 20;//刻度文字大小
     private int textLineSpace = 20;//刻度和文字的间隔
+
+//    private int current
 
     private int drawTextBegin = 0;
 
@@ -81,8 +88,7 @@ public class MyClockView extends View {
     // 扫过角度
     private float sweepAngle = 360 / 5f;
 
-    private List<OutCircleData> outCircleDataList;
-    private List<OutCircleData> innerCircleDataList;
+    private List<CircleData> circleDataList;
     //模拟数据------------
     /**
      * 用于测量文本的宽、高度（这里主要是来获取高度）
@@ -106,11 +112,6 @@ public class MyClockView extends View {
         mWidth = getMeasureSize(true, widthMeasureSpec);
         mHeight = getMeasureSize(false, heightMeasureSpec);
         setMeasuredDimension(mWidth, mHeight);
-
-        if (getMeasuredWidth() != 0 && getMeasuredHeight() != 0) {
-//            rectF = new RectF(0, 0, radius * 2, radius * 2);
-        }
-
     }
 
     /**
@@ -167,6 +168,14 @@ public class MyClockView extends View {
 
     }
 
+    //确定View大小
+    @Override
+    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+        super.onSizeChanged(w, h, oldw, oldh);
+        this.screenWidth = w;     //获取宽高
+        this.screenHeight = h;
+    }
+
     private void initPaint() {
         //绘制
         /**
@@ -189,6 +198,12 @@ public class MyClockView extends View {
         mInnerCirclePaint.setStrokeWidth(circleWidth);//设置线宽
         mInnerCirclePaint.setColor(Color.BLUE);
 
+        //中心圆画笔
+        mCenterCirclePaint = new Paint();
+        mCenterCirclePaint.setAntiAlias(true);//设置Paint为无锯齿
+        mCenterCirclePaint.setStrokeWidth(circleWidth);//设置线宽
+        mCenterCirclePaint.setColor(Color.BLUE);
+
         //刻度文字画笔
         textPaint = new Paint();
         textPaint.setTextSize(lineTextSize);
@@ -196,15 +211,19 @@ public class MyClockView extends View {
         textPaint.setColor(getContext().getResources().getColor(R.color.gary));
         textPaint.setStrokeWidth(textPainSize);
 
+        //
+        centerTextPaint = new Paint();
+        centerTextPaint.setTextSize(lineTextSize);
+        centerTextPaint.setAntiAlias(true);//设置Paint为无锯齿
+        centerTextPaint.setColor(getContext().getResources().getColor(R.color.white));
+        centerTextPaint.setStrokeWidth(textPainSize);
+
         //刻度画笔
         linePaint = new Paint();
         linePaint.setAntiAlias(true);//设置Paint为无锯齿
         linePaint.setColor(getContext().getResources().getColor(R.color.gary));//设置灰色
-//        textPaint.setColor(708090)
 
-//        StokPaint = new Paint();
-//        StokPaint.setAntiAlias(true);
-
+        //测试用的画笔
         testPaint = new Paint();
         testPaint.setTextSize(lineTextSize);
         testPaint.setAntiAlias(true);//设置Paint为无锯齿
@@ -219,21 +238,10 @@ public class MyClockView extends View {
     private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
 
-    //确定View大小
-    @Override
-    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
-        super.onSizeChanged(w, h, oldw, oldh);
-        this.screenWidth = w;     //获取宽高
-        this.screenHeight = h;
-    }
-
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-//        canvas.translate(screenWidth / 2, screenHeight / 2);
-        //先设置画布为view的中心点  把当前画布的原点移到(center.x,center.y),后面的操作都以(10,10)作为参照点，默认原点为(0,0)
         canvas.save();
-
 
         //画外部刻度和文字
         drawClockText(canvas);
@@ -252,22 +260,26 @@ public class MyClockView extends View {
     }
 
     private void drawCenterCircle(Canvas canvas) {
-
+        canvas.drawCircle(center.x, center.y, centerRadius, mCenterCirclePaint);
     }
 
     private void drawMyInnerAcr(Canvas canvas) {
-//        mInnerCirclePaint
         // 矩形区域
         RectF acrRectF = new RectF();
-        acrRectF.set(center.x - radius + circleWidth, center.y - radius + circleWidth, center.x + radius - circleWidth, center.y + radius - circleWidth);
+        acrRectF.set(center.x - radius + circleWidth, center.y - radius + circleWidth,
+                center.x + radius - circleWidth, center.y + radius - circleWidth);
         Log.d(TAG, "drawMyAcr: radius = " + radius);
-        for (int i = 0; i < innerCircleDataList.size(); i++) {
-            OutCircleData outCircleData = innerCircleDataList.get(i);
-            mInnerCirclePaint.setColor(getContext().getResources().getColor(outCircleData.getColor()));
-            Log.d(TAG, "drawMyAcr: 圆圈画笔颜色 = " + outCircleData.getColor());
-            Log.d(TAG, "drawMyAcr: outCircleData = " + outCircleData.toString());
-            //第三个参数是扫过的角度
-            canvas.drawArc(acrRectF, outCircleData.getStartAngle(), outCircleData.getSweepAngle(), false, mInnerCirclePaint);
+        for (int i = 0; i < circleDataList.size(); i++) {
+            CircleData circleData = circleDataList.get(i);
+            //内部圆环
+            if (circleData.getType() == 0) {
+                mInnerCirclePaint.setColor(getContext().getResources().getColor(circleData.getColor()));
+                Log.d(TAG, "drawMyAcr: 圆圈画笔颜色 = " + circleData.getColor());
+                Log.d(TAG, "drawMyAcr: outCircleData = " + circleData.toString());
+                //第三个参数是扫过的角度
+                canvas.drawArc(acrRectF, circleData.getStartAngle(), circleData.getSweepAngle(),
+                        false, mInnerCirclePaint);
+            }
         }
     }
 
@@ -277,8 +289,6 @@ public class MyClockView extends View {
         float begin = center.y - radius - circleWidth / 2;
         canvas.drawLine(center.x, begin, center.x,
                 center.y - radius - circleWidth / 2 - lineLength, linePaint);
-//        canvas.drawLine(center.x, center.y - radius - circleWidth / 2, center.x,
-//                center.y - radius - circleWidth, linePaint);
     }
 
     //画内部刻度
@@ -287,10 +297,6 @@ public class MyClockView extends View {
         //刻度长度为20  circleWidth
         canvas.drawLine(center.x, begin, center.x,
                 begin + lineLength, linePaint);
-//        canvas.drawLine(center.x, begin, center.x,
-//                center.y - radius + circleWidth * 2, linePaint);
-//        canvas.drawLine(center.x, center.y - radius + circleWidth + circleWidth / 2, center.x,
-//                center.y - radius + circleWidth * 2, linePaint);
     }
 
     //画内部的时间文字
@@ -305,14 +311,10 @@ public class MyClockView extends View {
             int width = rect.width();
             canvas.drawText(clockNumbers12[i], center.x - width / 2,
                     center.y - radius + circleWidth * 2 + textLineSpace + 5, textPaint);
-//            canvas.drawText(clockNumbers12[i], center.x - width / 2,
-//                    center.y - radius - circleWidth - textLineSpace, textPaint);
 //            通过旋转画布的方式快速设置刻度
 //            计算画布每次需要旋转的角度
             canvas.rotate(360 / clockNumbers24.length, mWidth / 2, mHeight / 2);//以圆中心进行旋转
         }
-        //绘制完后，把画布状态复原
-        //canvas.restore();
     }
 
     //画外面的时间文字
@@ -331,67 +333,59 @@ public class MyClockView extends View {
 //            计算画布每次需要旋转的角度
             canvas.rotate(360 / clockNumbers24.length, mWidth / 2, mHeight / 2);//以圆中心进行旋转
         }
-        //绘制完后，把画布状态复原
-//        canvas.restore();
     }
 
-//    private void drawMyView(Canvas canvas, Paint paint, RectF rectF, int startAngle, int endAngle) {
-//        paint.setStrokeJoin(Paint.Join.MITER);
-//        paint.setStrokeCap(Paint.Cap.SQUARE);
-//        canvas.drawArc(rectF, startAngle, endAngle, true, paint);
-//    }
 
-
-    //画扇形
+    //画外部扇形
     private void drawMyOutAcr(Canvas canvas) {
         // 矩形区域
         acrRectF.set(center.x - radius, center.y - radius, center.x + radius, center.y + radius);
         Log.d(TAG, "drawMyAcr: radius = " + radius);
-        for (int i = 0; i < outCircleDataList.size(); i++) {
+        for (int i = 0; i < circleDataList.size(); i++) {
 
-            OutCircleData outCircleData = outCircleDataList.get(i);
-            mOutCirclePaint.setColor(getContext().getResources().getColor(outCircleData.getColor()));
-            Log.d(TAG, "drawMyAcr: 圆圈画笔颜色 = " + outCircleData.getColor());
-            Log.d(TAG, "drawMyAcr: outCircleData = " + outCircleData.toString());
-            //第三个参数是扫过的角度
-            canvas.drawArc(acrRectF, outCircleData.getStartAngle(), outCircleData.getSweepAngle(), false, mOutCirclePaint);
+            CircleData circleData = circleDataList.get(i);
+            if (circleData.getType() == 1) {
+                mOutCirclePaint.setColor(getContext().getResources().getColor(circleData.getColor()));
+                Log.d(TAG, "drawMyAcr: 圆圈画笔颜色 = " + circleData.getColor());
+                Log.d(TAG, "drawMyAcr: outCircleData = " + circleData.toString());
+                //第三个参数是扫过的角度
+                canvas.drawArc(acrRectF, circleData.getStartAngle(), circleData.getSweepAngle(), false,
+                        mOutCirclePaint);
+            }
         }
     }
 
-    public void setData() {
-
-
-    }
 
     public void initData() {
-        outCircleDataList = new ArrayList<>();
+        circleDataList = new ArrayList<>();
         //模拟数据
         for (int i = 0; i < colors.length; i++) {
-            OutCircleData outCircleData = new OutCircleData();
-            outCircleData.setColor(colors[i]);
-            outCircleData.setName("第" + i + "个");
+            CircleData circleData = new CircleData();
+            circleData.setColor(colors[i]);
+            circleData.setName("第" + i + "个");
+            circleData.setType(1);
             Log.d(TAG, "initData: colors[i] = " + colors[i]);
-            outCircleData.setStartAngle(startAngel);
-            outCircleData.setEndAngle(startAngel + sweepAngle);
-            outCircleData.setSweepAngle(sweepAngle);
+            circleData.setStartAngle(startAngel);
+            circleData.setEndAngle(startAngel + sweepAngle);
+            circleData.setSweepAngle(sweepAngle);
             startAngel = startAngel + sweepAngle;
-            Log.d(TAG, "initData: outCircleData  = " + outCircleData.toString());
-            outCircleDataList.add(outCircleData);
+            Log.d(TAG, "initData: outCircleData  = " + circleData.toString());
+            circleDataList.add(circleData);
         }
 
-        innerCircleDataList = new ArrayList<>();
         //模拟数据
         for (int i = colors.length; i > 0; i--) {
-            OutCircleData outCircleData = new OutCircleData();
-            outCircleData.setName("inner第" + i + "个");
-            outCircleData.setColor(colors[i - 1]);
+            CircleData circleData = new CircleData();
+            circleData.setName("inner第" + i + "个");
+            circleData.setColor(colors[i - 1]);
+            circleData.setType(0);
             Log.d(TAG, "inner initData: colors[i-1] = " + colors[i - 1]);
-            outCircleData.setStartAngle(startAngel);
-            outCircleData.setEndAngle(startAngel + sweepAngle);
-            outCircleData.setSweepAngle(sweepAngle);
+            circleData.setStartAngle(startAngel);
+            circleData.setEndAngle(startAngel + sweepAngle);
+            circleData.setSweepAngle(sweepAngle);
             startAngel = startAngel + sweepAngle;
-            Log.d(TAG, "inner  initData: outCircleData  = " + outCircleData.toString());
-            innerCircleDataList.add(outCircleData);
+            Log.d(TAG, "inner  initData: outCircleData  = " + circleData.toString());
+            circleDataList.add(circleData);
         }
     }
 
@@ -406,9 +400,10 @@ public class MyClockView extends View {
     }
 
 
-    ArrayList<OutCircleData> outList = new ArrayList();
+    ArrayList<CircleData> outList = new ArrayList();
 
-    public void setData(ArrayList<OutCircleData> list) {
+    //扩展 外部改变数据更新view
+    public void setData(ArrayList<CircleData> list) {
         outList = list;
         invalidate();
     }

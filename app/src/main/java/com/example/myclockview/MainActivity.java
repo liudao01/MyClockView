@@ -19,27 +19,27 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initData() {
-        ArrayList list = new ArrayList<OutCircleData>();
+        ArrayList list = new ArrayList<CircleData>();
 
-        OutCircleData item = new OutCircleData();
+        CircleData item = new CircleData();
         item.setStartAngle(-90);
         item.setEndAngle(0);
         item.setName("Red");
         list.add(item);
 
-        item = new OutCircleData();
+        item = new CircleData();
         item.setStartAngle(0);
         item.setEndAngle(80);
         item.setName("Green");
         list.add(item);
 
-        item = new OutCircleData();
+        item = new CircleData();
         item.setStartAngle(80);
         item.setEndAngle(150);
         item.setName("BLUE");
         list.add(item);
 
-        item = new OutCircleData();
+        item = new CircleData();
         item.setStartAngle(150);
         item.setEndAngle(270);
         item.setName("YELLOW");
